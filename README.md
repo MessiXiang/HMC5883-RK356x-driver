@@ -22,3 +22,6 @@ usage:
 gcc readGs.c -o readGs
 ./readGs /dev/i2c-5
 ```
+
+## TODO
+Add an easy-to-use feature for adjusting measure range.
