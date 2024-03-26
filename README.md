@@ -5,7 +5,7 @@ driver for HMC5883 3-Axis Digital Compass IC on RK356x
 driver file with notes.
 
 ### hmc5883.c
-The demo program which can print the raw data from the hcm5883's register.
+The demo program which can print the raw data from the hmc5883's register.
 
 usage:
 ```bash
@@ -15,7 +15,7 @@ gcc hmc5883.c -o hmc5883
 you can change the i2c device from 5 to what you want.
 
 ### readGs.c
-The demo program which can print the mag data processed rom the hcm5883's register. Using 15Hz, 001(1090Lsb/Gs)config.
+The demo program which can print the mag data processed rom the hmc5883's register. Using 15Hz, 001(1090Lsb/Gs)config.
 
 usage:
 ```bash
