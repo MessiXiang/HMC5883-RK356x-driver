@@ -49,16 +49,16 @@ static short GetMagData_Raw(int fd, uint8_t addr, unsigned char REG_Address);
 
 static int HMC5883_init(int fd, uint8_t addr)
 {
-    i2c_write(fd, addr, HMC_CONFIG_A_REG, 0x70);
+    i2c_set(fd, addr, HMC_CONFIG_A_REG, 0x70);
     // 参见手册12页
     //  bit0-bit1 xyz是否使用偏压,默认为 0 0 对应正常配置
     //  bit2-bit4 数据输出速率, 1 1 0 为最大75HZ 1 0 0 为15HZ 最小 0 0 0 0.75HZ
     //  bit5-bit6每次采样平均数 1 1 为8次(默认) 0 0 为一次
     //  bit7 保留位，无意义，置零即可
-    i2c_write(fd, addr, HMC_CONFIG_B_REG, 0xA0);
+    i2c_set(fd, addr, HMC_CONFIG_B_REG, 0x20);
     // bit0-bit4 要求清零
-    // bit5-bit7 增益调节，数据越大，增益越小，默认 0 0 1
-    i2c_write(fd, addr, HMC_MODE_REG, 0x00);
+    // bit5-bit7 增益调节，数据越大，增益越小，此处为0 0 1，对应1090的增益
+    i2c_set(fd, addr, HMC_MODE_REG, 0x00);
     // bit0-bit1 模式设置 0 0 为连续测量 0 1 为单次测量
 
     return 0;
@@ -126,10 +126,10 @@ static int i2c_get(int fd, uint8_t addr, uint8_t reg, uint8_t *val)
 
 static short GetMagData_Raw(int fd, uint8_t addr, unsigned char REG_Address)
 {
-    char high_8 = 0, low_8 = 0;
+    uint8_t high_8 = 0, low_8 = 0;
 
-    i2c_read(fd, addr, REG_Address, &high_8);
+    i2c_get(fd, addr, REG_Address, &high_8);
     usleep(1000); // 1000微秒
-    i2c_read(fd, addr, REG_Address + 1, &low_8);
-    return (high_8 << 8) | low_8;
+    i2c_get(fd, addr, REG_Address + 1, &low_8);
+    return (((short)high_8) << 8) | (short)low_8; // 之前没有强制转换，也有问题，现已改正
 }
