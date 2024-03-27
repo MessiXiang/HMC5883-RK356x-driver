@@ -15,7 +15,7 @@ gcc hmc5883.c -o hmc5883
 you can change the i2c device from 5 to what you want.
 
 ### readGs.c
-The demo program which can print the mag data processed rom the hmc5883's register. Using 15Hz, 001(1090Lsb/Gs)config.
+The demo program which can print the mag data processed from the hmc5883's register. Using 15Hz, 001(1090Lsb/Gs)config.
 
 usage:
 ```bash
