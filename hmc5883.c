@@ -21,15 +21,16 @@ int main(int argc, char *argv[])
 
     // initialize HMC5883
     HMC5883_init(fd, Address);
+    usleep(6*1000);
     while (1)
     {
-        usleep(1000 * 10);
+        // usleep(1000 * 10);
         printf("Mag_X:%6d\n ", GetMagData_Raw(fd, Address, HMC_XMSB_REG));
-        usleep(1000 * 10);
+        // usleep(1000 * 10);
         printf("Mag_Z:%6d\n ", GetMagData_Raw(fd, Address, HMC_ZMSB_REG));
-        usleep(1000 * 10);
+        // usleep(1000 * 10);
         printf("Mag_Y:%6d\n ", GetMagData_Raw(fd, Address, HMC_YMSB_REG));
-        usleep(1000 * 77);
+        usleep(70*1000);
     }
 
     close(fd);
