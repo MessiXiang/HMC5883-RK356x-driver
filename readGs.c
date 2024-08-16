@@ -19,13 +19,24 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // 初始化HMC5883
+    // 初始化HMC5883，参数在hmc5883.h里面设置
     HMC5883_init(fd, Address);
 
     int16_t raw_x, raw_y, raw_z; // 之前是int8_t，现已改正
     float mag_x, mag_y, mag_z;
 
+    if (HMC5883_selftest(fd, Address) == -1)
+    {
+        printf("self test not passed\n");
+        // return -1;
+    }
+    else
+    {
+        printf("self test:PASS\n");
+    }
+
     printf("Mag is:\n");
+    usleep(1000 * 500);
     while (1)
     {
         // 获取原始数据
@@ -42,8 +53,8 @@ int main(int argc, char *argv[])
         mag_z = (float)raw_z / 1090;
 
         printf("X-axis:%6fGs  Y-axis:%6fGs  Z-axis:%6fGs    \r", mag_x, mag_y, mag_z);
-        // 等待77毫秒，别问我为什么，因为比66.6毫秒大就行
-        usleep(1000 * 77);
+        // wait for 70'000 useconds
+        usleep(1000 * 70);
     }
     return 0;
 }
