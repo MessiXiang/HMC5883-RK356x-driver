@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    // 初始化HMC5883
+    // initialize HMC5883
     HMC5883_init(fd, Address);
     while (1)
     {
