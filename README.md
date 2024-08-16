@@ -4,6 +4,10 @@ driver for HMC5883 3-Axis Digital Compass IC on RK356x
 ### hmc5883.h
 driver file with notes.
 
+Also, it's where you can modify the parameters of hmc5883.
+
+> UPDATE 20240816: Added a selftest function.
+
 ### hmc5883.c
 The demo program which can print the raw data from the hmc5883's register.
 
@@ -22,6 +26,3 @@ usage:
 gcc readGs.c -o readGs
 ./readGs /dev/i2c-5
 ```
-
-## TODO
-Add an easy-to-use feature for adjusting measure range.

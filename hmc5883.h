@@ -46,6 +46,7 @@ static int HMC5883_init(int fd, uint8_t addr); // 初始化，记得自己调
 static int i2c_set(int fd, uint8_t addr, uint8_t reg, uint8_t val);
 static int i2c_get(int fd, uint8_t addr, uint8_t reg, uint8_t *val);
 static short GetMagData_Raw(int fd, uint8_t addr, unsigned char REG_Address);
+static int HMC5883_selftest(int fd, uint8_t addr);
 
 static int HMC5883_init(int fd, uint8_t addr)
 {
@@ -61,6 +62,50 @@ static int HMC5883_init(int fd, uint8_t addr)
     i2c_set(fd, addr, HMC_MODE_REG, 0x00);
     // bit0-bit1 模式设置 0 0 为连续测量 0 1 为单次测量
 
+    return 0;
+}
+
+static int HMC5883_selftest(int fd, uint8_t addr)
+{
+    uint8_t original_para[3];
+    i2c_get(fd, addr, HMC_CONFIG_A_REG, original_para);
+    i2c_get(fd, addr, HMC_CONFIG_B_REG, original_para + 1);
+    i2c_get(fd, addr, HMC_MODE_REG, original_para + 2);
+
+    int gainList[7] = {230, 330, 390, 440, 660, 820, 1090};
+
+    short test_x, test_z, test_y;
+
+    int reg_b_value = 0xE0;
+
+    i2c_set(fd, addr, HMC_CONFIG_A_REG, 0x71); // self-test mode
+    i2c_set(fd, addr, HMC_MODE_REG, 0x00);
+
+    usleep(10 * 1000);
+
+    for (int time = 0; time < 7; time++)
+    {
+        i2c_set(fd, addr, HMC_CONFIG_B_REG, reg_b_value); // gain = (230)
+        usleep(500 * 1000);
+
+        test_x = GetMagData_Raw(fd, Address, HMC_XMSB_REG);
+        test_z = GetMagData_Raw(fd, Address, HMC_ZMSB_REG);
+        test_y = GetMagData_Raw(fd, Address, HMC_YMSB_REG);
+
+        printf("testing...  gain:%4d   pass!\n", gainList[time]);
+        usleep(70 * 1000);
+        double lower_limit = 243 * gainList[time] / 390, upper_limit = 575 * gainList[time] / 390;
+        if (((test_x < lower_limit) || (test_x > upper_limit)) ||
+            ((test_z < lower_limit) || (test_z > upper_limit)) ||
+            ((test_y < lower_limit) || (test_y > upper_limit)))
+        {
+            return -1;
+        }
+        reg_b_value -= 32; // 0b0010000
+    }
+    i2c_set(fd, addr, HMC_CONFIG_A_REG, original_para[0]);
+    i2c_set(fd, addr, HMC_CONFIG_B_REG, original_para[1]);
+    i2c_set(fd, addr, HMC_MODE_REG, original_para[2]);
     return 0;
 }
 
